@@ -18,3 +18,9 @@ exports.insert = (req, res, next) => {
     res.json(card[0]);
   });
 };
+
+exports.update = (req, res, next) => {
+  queries.update(req.params.card_id, req.body).then((card) => {
+    res.json(card[0]);
+  });
+};
