@@ -1,9 +1,14 @@
+const queries = require('../db/queries');
+
 exports.index = (req, res) => {
-  console.log('get all cards');
-  res.json({ all: 'all_cards' });
+  queries.getAll().then((result) => {
+    res.json(result);
+  });
 };
 
-exports.show = (req, res) => {
-  console.log('get card by id %s', req.params.card_id);
-  res.json({ id: req.params.card_id });
+exports.show = (req, res, next) => {
+  queries.getOne(req.params.card_id).then((result) => {
+    if (result) res.json(result);
+    else next();
+  });
 };
