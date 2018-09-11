@@ -2,6 +2,7 @@ const request = require('supertest');
 const expect = require('chai').expect;
 const knex = require('../db/knex');
 const app = require('../app');
+const seed_cards = require('../support/seeds/cards');
 
 describe('CRUD cards test', () => {
 
@@ -27,6 +28,19 @@ describe('CRUD cards test', () => {
   it('Should success if get a speficic card', (done) => {
     request(app)
       .get('/api/cards/1')
+      .set('Accept', 'application/json')
+      .expect('Content-Type', 'application/json; charset=utf-8')
+      .expect(200)
+      .then((response) => {
+        expect(response.body).to.be.a('object');
+        console.log(response.body);
+        done();
+      });
+  });
+  it('Should success if insert a speficic card', (done) => {
+    request(app)
+      .post('/api/cards/')
+      .send(seed_cards[0])
       .set('Accept', 'application/json')
       .expect('Content-Type', 'application/json; charset=utf-8')
       .expect(200)

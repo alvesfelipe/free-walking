@@ -13,7 +13,7 @@ module.exports = [
   },
   {
     title: 'Teresina',
-    description: 'City of Teresina state',
+    description: 'City of Piauí state',
     latitude: -5.08917,
     longitude: -42.80194,
   },
