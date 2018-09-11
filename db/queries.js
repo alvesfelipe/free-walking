@@ -7,4 +7,7 @@ module.exports = {
   getOne(id) {
     return knex('card').where('id', id).first();
   },
+  create(card) {
+    return knex('card').insert(card, '*');
+  },
 };
