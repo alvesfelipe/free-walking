@@ -2,10 +2,11 @@
   "name": "free-walking",
   "version": "1.0.0",
   "description": "project that aims to provide new tour routes for your clients",
-  "main": "index.js",
+  "main": "app.js",
   "scripts": {
-    "test": "npm test",
-    "start": "node app.js"
+    "test": "(dropdb --if-exists test_free_walking && createdb test_free_walking) && NODE_ENV=test mocha test/app.test.js",
+    "start": "node app.js",
+    "dev": "nodemon"
   },
   "repository": {
     "type": "git",
@@ -21,11 +22,21 @@
   },
   "homepage": "https://github.com/alvesfelipe/free-walking#readme",
   "devDependencies": {
+    "chai": "^4.1.2",
     "eslint": "^5.5.0",
     "eslint-config-airbnb-base": "^13.1.0",
-    "eslint-plugin-import": "^2.14.0"
+    "eslint-plugin-import": "^2.14.0",
+    "mocha": "^5.2.0",
+    "nodemon": "^1.18.4",
+    "supertest": "^3.3.0"
   },
   "dependencies": {
-    "express": "^4.16.3"
+    "body-parser": "^1.18.3",
+    "cookie-parser": "^1.4.3",
+    "express": "^4.16.3",
+    "http": "0.0.0",
+    "knex": "^0.15.2",
+    "morgan": "^1.9.1",
+    "pg": "^7.4.3"
   }
 }
