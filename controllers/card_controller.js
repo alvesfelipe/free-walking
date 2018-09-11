@@ -12,3 +12,9 @@ exports.show = (req, res, next) => {
     else next();
   });
 };
+
+exports.insert = (req, res, next) => {
+  queries.create(req.body).then((card) => {
+    res.json(card[0]);
+  });
+};
