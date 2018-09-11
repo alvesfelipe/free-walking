@@ -10,4 +10,7 @@ module.exports = {
   create(card) {
     return knex('card').insert(card, '*');
   },
+  update(id, card) {
+    return knex('card').where('id', id).update(card, '*');
+  },
 };
