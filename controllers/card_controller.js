@@ -24,3 +24,9 @@ exports.update = (req, res, next) => {
     res.json(card[0]);
   });
 };
+
+exports.delete = (req, res) => {
+  queries.delete(req.params.card_id).then(() => {
+    res.json({ deleted: true });
+  });
+};
