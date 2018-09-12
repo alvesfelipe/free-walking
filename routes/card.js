@@ -8,4 +8,5 @@ module.exports = router
   .get('/', cardController.index)
   .get('/:card_id', validator.validateId, cardController.show)
   .post('/', validator.validateCard, cardController.insert)
-  .put('/:card_id', validator.validateId, validator.validateCard, cardController.update);
+  .put('/:card_id', validator.validateId, validator.validateCard, cardController.update)
+  .delete('/:card_id', validator.validateId, cardController.delete);
