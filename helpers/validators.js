@@ -1,6 +1,6 @@
 exports.validateId = (req, res, next) => {
   if (!isNaN(req.params.card_id)) return next();
-  return next(new Error(`Invalid card_id + ${req.params.card_id}`));
+  return next(new Error(`Invalid card_id ${req.params.card_id}`));
 };
 
 exports.validateCard = (req, res, next) => {
