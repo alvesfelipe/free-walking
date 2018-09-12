@@ -13,4 +13,7 @@ module.exports = {
   update(id, card) {
     return knex('card').where('id', id).update(card, '*');
   },
+  delete(id) {
+    return knex('card').where('id', id).del();
+  },
 };
