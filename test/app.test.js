@@ -69,4 +69,17 @@ describe('CRUD cards test', () => {
         done();
       });
   });
+  it('Should success if delete a speficic card', (done) => {
+    request(app)
+      .delete('/api/cards/3')
+      .send(testPut)
+      .set('Accept', 'application/json')
+      .expect('Content-Type', 'application/json; charset=utf-8')
+      .expect(200)
+      .then((response) => {
+        expect(response.body).to.be.a('object');
+        console.log(response.body);
+        done();
+      });
+  });
 });
