@@ -67,3 +67,8 @@ $ cd free-walking
 $ npm run dev
 ```
 Tested on MacBook Pro device, using the OS X El Capitan Version 10.11.6.
+
+## Contributors
+
+* Felipe Alves ([alvesfelipe](https://github.com/alvesfelipe))
+
