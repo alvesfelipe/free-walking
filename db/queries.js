@@ -2,18 +2,18 @@ const knex = require('./knex');
 
 module.exports = {
   getAll() {
-    return knex('card');
+    return knex('cards');
   },
   getOne(id) {
-    return knex('card').where('id', id).first();
+    return knex('cards').where('id', id).first();
   },
   create(card) {
-    return knex('card').insert(card, '*');
+    return knex('cards').insert(card, '*');
   },
   update(id, card) {
-    return knex('card').where('id', id).update(card, '*');
+    return knex('cards').where('id', id).update(card, '*');
   },
   delete(id) {
-    return knex('card').where('id', id).del();
+    return knex('cards').where('id', id).del();
   },
 };

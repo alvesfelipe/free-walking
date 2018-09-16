@@ -6,7 +6,9 @@
   "scripts": {
     "test": "(dropdb --if-exists test_free_walking && createdb test_free_walking) && NODE_ENV=test mocha test/app.test.js",
     "start": "node app.js",
-    "dev": "nodemon"
+    "dev": "nodemon",
+    "build": "dropdb --if-exists free_walking && createdb free_walking && knex migrate:latest",
+    "postinstall": "npm run build"
   },
   "repository": {
     "type": "git",
