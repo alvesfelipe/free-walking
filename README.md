@@ -60,6 +60,8 @@ $ cd free-walking
 $ npm install
 ```
 
+The installation command above already executes `npm run build`.
+
 ## Development
 
 ```bash
