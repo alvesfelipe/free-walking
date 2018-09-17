@@ -6,12 +6,12 @@ This repository implements the backend side of the project Free Walking, that ai
 
 ## Stack
 
-* [node](https://nodejs.org/en/) (6.11.1)
+* [node](https://nodejs.org/en/) (10.10.0)
 * [PostgreSQL](https://www.postgresql.org) (10.5)
 * [knex.js](https://knexjs.org) (0.15.2)
 * [mocha.js](https://mochajs.org) (5.2.0)
 * [lint](https://eslint.org)(5.5.0)
-* [npm](https://www.npmjs.com) (3.10.10)
+* [npm](https://www.npmjs.com) (6.4.1)
 
 ## Cards
 
