@@ -10,6 +10,9 @@ module.exports = {
   getByValue(hashtag) {
     return knex('hashtags').where('hashtag', hashtag).first();
   },
+  getById(id) {
+    return knex('hashtags').where('id', id).first();
+  },
   create(hahstag) {
     return knex('hashtags').insert(hahstag, '*');
   },
