@@ -29,12 +29,11 @@ exports.insert = (req, res, next) => {
   delete req.body.hashtags;
   queries.create(req.body).then((card) => {
     if (hashtagsArray) {
-      for (let i in hashtagsArray) { // eslint-disable-line
-        insertCardHashtag(hashtagsArray[i], card[0]);
-      }
+      hashtagsArray.forEach((element) => {
+        insertCardHashtag(element, card[0]);
+      });
     }
-    const resCard = card[0] + { hashtags: hashtagsArray };
-    res.json(resCard);
+    res.json(Object.assign(card[0], { hashtags: hashtagsArray }));
   });
 };
 
