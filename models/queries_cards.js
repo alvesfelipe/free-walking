@@ -1,4 +1,4 @@
-const knex = require('../knex');
+const knex = require('../db/knex');
 const queriesHashtags = require('./queries_hashtags');
 
 const getCardsPlusTags = card => new Promise((resolve, reject) => {

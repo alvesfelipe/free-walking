@@ -1,4 +1,4 @@
-const knex = require('../knex');
+const knex = require('../db/knex');
 
 module.exports = {
   getAll() {
