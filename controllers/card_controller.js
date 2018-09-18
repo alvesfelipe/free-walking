@@ -32,8 +32,9 @@ exports.insert = (req, res, next) => {
       hashtagsArray.forEach((element) => {
         insertCardHashtag(element, card[0]);
       });
+      res.json(Object.assign(card[0], { hashtags: hashtagsArray }));
     }
-    res.json(Object.assign(card[0], { hashtags: hashtagsArray }));
+    res.json(Object.assign(card[0]));
   });
 };
 

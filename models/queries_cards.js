@@ -1,7 +1,7 @@
 const knex = require('../db/knex');
 const queriesHashtags = require('./queries_hashtags');
 
-const getCardsPlusTags = card => new Promise((resolve, reject) => {
+const getCardPlusTags = card => new Promise((resolve, reject) => {
   knex('cards_hashtags').where('cards_id', card.id).then((cardsTags) => {
     const allPromises = [];
     cardsTags.forEach((tags) => {
@@ -20,7 +20,7 @@ module.exports = {
       knex('cards').then((cards) => {
         const cardsPlusTags = [];
         cards.forEach((item) => {
-          cardsPlusTags.push(getCardsPlusTags(item));
+          cardsPlusTags.push(getCardPlusTags(item));
         });
         Promise.all(cardsPlusTags).then((result) => {
           console.log(result);
@@ -30,7 +30,11 @@ module.exports = {
     });
   },
   getOne(id) {
-    return knex('cards').where('id', id).first();
+    return new Promise((resolve) => {
+      knex('cards').where('id', id).first().then((card) => {
+        resolve(getCardPlusTags(card));
+      });
+    });
   },
   create(card) {
     return knex('cards').insert(card, '*');
@@ -39,13 +43,32 @@ module.exports = {
     return knex('cards').where('id', id).update(card, '*');
   },
   delete(id) {
-    return knex('cards').where('id', id).del();
+    return new Promise((resolve) => {
+      this.getOne(id).then((card) => {
+        const allPromises = [];
+        card.hashtags.forEach((item) => {
+          allPromises.push(queriesHashtags.getByValue(item).then((tag) => {
+            this.getCardsHashtagsByHashtag(tag.id).then((result) => {
+              if (Object.keys(result).length === 1) { queriesHashtags.delete(tag.id).then(); }
+            });
+          }));
+        });
+        Promise.all(allPromises).then(() => {
+          this.detachCardsId(id).then(() => {
+            resolve(knex('cards').where('id', id).del());
+          });
+        });
+      });
+    });
   },
   attachCardsHashtags(cardId, hashtagId) {
     return knex('cards_hashtags').insert({ cards_id: cardId, hashtags_id: hashtagId }, '*');
   },
   detachCardsHashtags(cardId, hashtagId) {
     return knex('cards_hashtags').where({ cards_id: cardId, hashtags_id: hashtagId }).del();
+  },
+  detachCardsId(cardId) {
+    return knex('cards_hashtags').where('cards_id', cardId).del();
   },
   getCardsHashtagsByHashtag(hashtagId) {
     return knex('cards_hashtags').where('hashtags_id', hashtagId);
