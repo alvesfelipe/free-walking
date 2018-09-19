@@ -12,8 +12,8 @@ exports.up = (knex, Promise) => Promise.all([
   }),
   knex.schema.createTable('cards_hashtags', (table) => {
     table.increments('id').primary();
-    table.integer('cards_id').references('cards.id');
-    table.integer('hashtags_id').references('hashtags.id');
+    table.integer('cards_id');
+    table.integer('hashtags_id');
   }),
 ]);
 

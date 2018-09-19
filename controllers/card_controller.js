@@ -14,33 +14,27 @@ exports.show = (req, res, next) => {
   });
 };
 
-const insertCardHashtag = (value, card) => queriesHashtags.getByValue(value).then((result) => {
-  if (!result) {
-    queriesHashtags.create({ hashtag: value }).then((hashtag) => {
-      queries.attachCardsHashtags(card.id, hashtag[0].id).then();
-    });
-  } else {
-    queries.attachCardsHashtags(card.id, result.id).then();
-  }
-});
-
 exports.insert = (req, res, next) => {
   const hashtagsArray = req.body.hashtags;
   delete req.body.hashtags;
   queries.create(req.body).then((card) => {
     if (hashtagsArray) {
+      const allPromises = [];
       hashtagsArray.forEach((element) => {
-        insertCardHashtag(element, card[0]);
+        allPromises.push(queries.insertCardHashtag(element, card[0].id));
       });
-      res.json(Object.assign(card[0], { hashtags: hashtagsArray }));
+      Promise.all(allPromises).then(() => {
+        res.json(Object.assign(card[0], { hashtags: hashtagsArray }));
+      }).catch((err) => { console.log(err); });
+    } else {
+      res.json(Object.assign(card[0]));
     }
-    res.json(Object.assign(card[0]));
-  });
+  }).catch((err) => { console.log(err); });
 };
 
 exports.update = (req, res, next) => {
   queries.update(req.params.card_id, req.body).then((card) => {
-    res.json(card[0]);
+    res.json(card);
   });
 };
 

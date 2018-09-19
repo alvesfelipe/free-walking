@@ -15,6 +15,39 @@ const getCardPlusTags = card => new Promise((resolve, reject) => {
 });
 
 module.exports = {
+  deleteCardTags(card) {
+    return new Promise((resolve) => {
+      const allPromises = [];
+      let tagId;
+      card.hashtags.forEach((item) => {
+        const promises = queriesHashtags.getByValue(item)
+          .then((tag) => {
+            tagId = tag.id;
+            return this.getCardsHashtagsByHashtag(tag.id);
+          })
+          .then((result) => {
+            if (Object.keys(result).length === 1) { queriesHashtags.delete(tagId).then(); }
+          });
+        allPromises.push(promises);
+      });
+      Promise.all(allPromises).then(() => {
+        resolve(true);
+      });
+    });
+  },
+  insertCardHashtag(tag, cardId) {
+    return new Promise((resolve) => {
+      queriesHashtags.getByValue(tag).then((result) => {
+        if (!result) {
+          queriesHashtags.create({ hashtag: tag }).then((hashtag) => {
+            this.attachCardsHashtags(cardId, hashtag[0].id).then(() => resolve());
+          });
+        } else {
+          this.attachCardsHashtags(cardId, result.id).then(() => resolve());
+        }
+      });
+    });
+  },
   getAll() {
     return new Promise((resolve) => {
       knex('cards').then((cards) => {
@@ -40,20 +73,30 @@ module.exports = {
     return knex('cards').insert(card, '*');
   },
   update(id, card) {
-    return knex('cards').where('id', id).update(card, '*');
+    return new Promise((resolve) => {
+      const cardNew = Object.assign({}, card);
+      delete cardNew.hashtags;
+      knex('cards').where('id', id).update(cardNew, '*').then(() => {
+        this.getOne(id).then((oldCard) => {
+          this.deleteCardTags(oldCard).then(() => {
+            this.detachCardsId(id).then(() => {
+              const allPromises = [];
+              card.hashtags.forEach((element) => {
+                allPromises.push(this.insertCardHashtag(element, id));
+              });
+              Promise.all(allPromises).then(() => {
+                resolve(card);
+              });
+            });
+          });
+        });
+      });
+    });
   },
   delete(id) {
     return new Promise((resolve) => {
       this.getOne(id).then((card) => {
-        const allPromises = [];
-        card.hashtags.forEach((item) => {
-          allPromises.push(queriesHashtags.getByValue(item).then((tag) => {
-            this.getCardsHashtagsByHashtag(tag.id).then((result) => {
-              if (Object.keys(result).length === 1) { queriesHashtags.delete(tag.id).then(); }
-            });
-          }));
-        });
-        Promise.all(allPromises).then(() => {
+        this.deleteCardTags(card).then(() => {
           this.detachCardsId(id).then(() => {
             resolve(knex('cards').where('id', id).del());
           });
