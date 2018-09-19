@@ -34,7 +34,8 @@ The POST requisition require the following JSON formmat:
 	"title": "João Pessoa",
 	"description": "City of Paraíba state",
 	"latitude": -7.115,
-	"longitude": -34.86306
+	"longitude": -34.86306,
+	"hashtags": ["#city", "#home", "#sun"]
 }
 ```
 
@@ -46,7 +47,8 @@ The PUT requisition require the following JSON formmat:
 	"title": "João Pessoa",
 	"description": "City of Paraíba state",
 	"latitude": -7.115,
-	"longitude": -34.86306
+	"longitude": -34.86306,
+	"hashtags": ["#city", "#home", "#sun"]
 }
 ```
 
@@ -60,7 +62,7 @@ $ cd free-walking
 $ npm install
 ```
 
-The installation command above already executes `npm run build`.
+The installation command above already executes `npm run build`, that creates free_walking database and tables.
 
 ## Development
 
