@@ -15,11 +15,11 @@ const getCardPlusTags = card => new Promise((resolve, reject) => {
 });
 
 module.exports = {
-  deleteCardTags(card) {
+  deleteCardTags(tags) {
     return new Promise((resolve) => {
       const allPromises = [];
       let tagId;
-      card.hashtags.forEach((item) => {
+      tags.forEach((item) => {
         const promises = queriesHashtags.getByValue(item)
           .then((tag) => {
             tagId = tag.id;
@@ -61,12 +61,30 @@ module.exports = {
         });
       });
     });
+    // Getting all cards using sql query
+    // return knex.select()
+    //   .from('cards')
+    //   .leftJoin('cards_hashtags', 'cards.id', 'cards_hashtags.cards_id')
+    //   .leftJoin('hashtags', 'cards_hashtags.hashtags_id', 'hashtags.id');
   },
   getOne(id) {
     return new Promise((resolve) => {
-      knex('cards').where('id', id).first().then((card) => {
-        resolve(getCardPlusTags(card));
-      });
+      knex.select()
+        .from('cards').where('cards.id', id)
+        .leftJoin('cards_hashtags', 'cards.id', 'cards_hashtags.cards_id')
+        .leftJoin('hashtags', 'cards_hashtags.hashtags_id', 'hashtags.id')
+        .then((result) => {
+          const tags = result.map(item => item.hashtag);
+          const newCard = {
+            id: result[0].cards_id,
+            title: result[0].title,
+            description: result[0].description,
+            latitude: result[0].latitude,
+            longitude: result[0].longitude,
+            hashtags: tags,
+          };
+          resolve(newCard);
+        });
     });
   },
   create(card) {
@@ -77,8 +95,8 @@ module.exports = {
       const cardNew = Object.assign({}, card);
       delete cardNew.hashtags;
       knex('cards').where('id', id).update(cardNew, '*').then(() => {
-        this.getOne(id).then((oldCard) => {
-          this.deleteCardTags(oldCard).then(() => {
+        this.getOne(id).then((cd) => {
+          this.deleteCardTags(cd.hashtags).then(() => {
             this.detachCardsId(id).then(() => {
               const allPromises = [];
               card.hashtags.forEach((element) => {
