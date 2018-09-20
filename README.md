@@ -43,7 +43,6 @@ The PUT requisition require the following JSON formmat:
 
 ```javascript
 {
-	"id": 1,
 	"title": "João Pessoa",
 	"description": "City of Paraíba state",
 	"latitude": -7.115,
