@@ -1,18 +1,16 @@
 const knex = require('../db/knex');
 const queriesHashtags = require('./queries_hashtags');
 
-const getCardPlusTags = card => new Promise((resolve, reject) => {
-  knex('cards_hashtags').where('cards_id', card.id).then((cardsTags) => {
-    const allPromises = [];
-    cardsTags.forEach((tags) => {
-      allPromises.push(queriesHashtags.getById(tags.hashtags_id));
-    });
-    Promise.all(allPromises).then((result) => {
-      const tagArray = [result.map(tag => tag.hashtag)];
-      resolve(Object.assign(card, { hashtags: tagArray[0] }));
-    }).catch(err => reject(err));
-  }).catch(err => reject(err));
-});
+const groupBy = (data, key) => data.reduce((rv, x) => {
+  const aux = rv;
+  (aux[x[key]] = aux[x[key]] || []).push(x);
+  return aux;
+}, {});
+
+const getAllCard = info => knex.select(info)
+  .from('cards')
+  .leftJoin('cards_hashtags', 'cards_hashtags.cards_id', 'cards.id')
+  .leftJoin('hashtags', 'cards_hashtags.hashtags_id', 'hashtags.id');
 
 module.exports = {
   deleteCardTags(tags) {
@@ -50,40 +48,29 @@ module.exports = {
   },
   getAll() {
     return new Promise((resolve) => {
-      knex('cards').then((cards) => {
-        const cardsPlusTags = [];
-        cards.forEach((item) => {
-          cardsPlusTags.push(getCardPlusTags(item));
-        });
-        Promise.all(cardsPlusTags).then((result) => {
-          console.log(result);
-          resolve(result);
-        });
+      const info = ['cards.id', 'title', 'description', 'latitude', 'longitude', 'hashtag'];
+      getAllCard(info).then((res) => {
+        const grouped = groupBy(res, 'id');
+        const elements = [];
+        if (grouped) {
+          Object.keys(grouped).forEach((element) => {
+            const tags = grouped[element].map(item => item.hashtag);
+            delete grouped[element][1].hashtag;
+            elements.push(Object.assign(grouped[element][1], { hashtags: tags }));
+          });
+        }
+        resolve(elements);
       });
     });
-    // Getting all cards using sql query
-    // return knex.select()
-    //   .from('cards')
-    //   .leftJoin('cards_hashtags', 'cards.id', 'cards_hashtags.cards_id')
-    //   .leftJoin('hashtags', 'cards_hashtags.hashtags_id', 'hashtags.id');
   },
   getOne(id) {
     return new Promise((resolve) => {
-      knex.select()
-        .from('cards').where('cards.id', id)
-        .leftJoin('cards_hashtags', 'cards.id', 'cards_hashtags.cards_id')
-        .leftJoin('hashtags', 'cards_hashtags.hashtags_id', 'hashtags.id')
+      const info = ['cards.id', 'title', 'description', 'latitude', 'longitude', 'hashtag'];
+      getAllCard(info).where('cards.id', id)
         .then((result) => {
           const tags = result.map(item => item.hashtag);
-          const newCard = {
-            id: result[0].cards_id,
-            title: result[0].title,
-            description: result[0].description,
-            latitude: result[0].latitude,
-            longitude: result[0].longitude,
-            hashtags: tags,
-          };
-          resolve(newCard);
+          delete result.hashtag;
+          resolve(Object.assign(result[1], { hashtags: tags }));
         });
     });
   },
