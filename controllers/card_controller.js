@@ -1,5 +1,4 @@
 const queries = require('../models/queries_cards');
-const queriesHashtags = require('../models/queries_hashtags');
 
 exports.index = (req, res) => {
   queries.getAll().then((result) => {

@@ -69,7 +69,8 @@ module.exports = {
       getAllCard(info).where('cards.id', id)
         .then((result) => {
           const tags = result.map(item => item.hashtag);
-          delete result.hashtag;
+          const aux = result;
+          delete aux.hashtag;
           resolve(Object.assign(result[1], { hashtags: tags }));
         });
     });
