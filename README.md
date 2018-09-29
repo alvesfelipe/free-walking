@@ -71,6 +71,15 @@ $ npm run dev
 ```
 Tested on MacBook Pro device, using the OS X El Capitan Version 10.11.6.
 
+## Tests
+
+In order to create a test database, tables and seed, type:
+
+```bash
+$ cd free-walking
+$ npm test
+```
+
 ## Contributors
 
 * Felipe Alves ([alvesfelipe](https://github.com/alvesfelipe))
