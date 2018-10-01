@@ -55,8 +55,8 @@ module.exports = {
         if (grouped) {
           Object.keys(grouped).forEach((element) => {
             const tags = grouped[element].map(item => item.hashtag);
-            delete grouped[element][1].hashtag;
-            elements.push(Object.assign(grouped[element][1], { hashtags: tags }));
+            delete grouped[element][0].hashtag;
+            elements.push(Object.assign(grouped[element][0], { hashtags: tags }));
           });
         }
         resolve(elements);
@@ -71,7 +71,7 @@ module.exports = {
           const tags = result.map(item => item.hashtag);
           const aux = result;
           delete aux.hashtag;
-          resolve(Object.assign(result[1], { hashtags: tags }));
+          resolve(Object.assign(result[0], { hashtags: tags }));
         });
     });
   },
@@ -84,29 +84,41 @@ module.exports = {
       delete cardNew.hashtags;
       knex('cards').where('id', id).update(cardNew, '*').then(() => {
         this.getOne(id).then((cd) => {
-          this.deleteCardTags(cd.hashtags).then(() => {
-            this.detachCardsId(id).then(() => {
-              const allPromises = [];
-              card.hashtags.forEach((element) => {
-                allPromises.push(this.insertCardHashtag(element, id));
-              });
-              Promise.all(allPromises).then(() => {
+          console.log('idddd' + id);
+          if (cd.hashtags[0] !== null) {
+            this.deleteCardTags(cd.hashtags).then(() => {
+              console.log('iddddaaaaaaaaaa' + id);
+              this.detachCardsId(id).then(() => {
+                console.log('asdfasf' + id);
+                const allPromises = [];
+                if (card.hashtags[0] !== null) {
+                  console.log('asdfasdf' + id);
+                  card.hashtags.forEach((element) => {
+                    allPromises.push(this.insertCardHashtag(element, id));
+                  });
+                  Promise.all(allPromises).then(() => {
+                    resolve(card);
+                  });
+                }
                 resolve(card);
-              });
-            });
-          });
-        });
+              }).catch((err) => console.log('aaaaaaaaaaaaaaaaa' + err));
+            }).catch((err) => console.log('bbbbbbbbbbbbb' + err));
+          }
+          resolve(card);
+        }).catch((err) => console.log('cccccccccccc' + err));
       });
     });
   },
   delete(id) {
     return new Promise((resolve) => {
       this.getOne(id).then((card) => {
-        this.deleteCardTags(card).then(() => {
-          this.detachCardsId(id).then(() => {
-            resolve(knex('cards').where('id', id).del());
-          });
-        });
+        if (card.hashtags[0] !== null) {
+          this.deleteCardTags(card.hashtags).then(() => this.detachCardsId(id))
+            .then(() => {
+              resolve(knex('cards').where('id', id).del());
+            });
+        }
+        resolve(knex('cards').where('id', id).del());
       });
     });
   },
