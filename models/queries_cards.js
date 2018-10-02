@@ -84,15 +84,11 @@ module.exports = {
       delete cardNew.hashtags;
       knex('cards').where('id', id).update(cardNew, '*').then(() => {
         this.getOne(id).then((cd) => {
-          console.log('idddd' + id);
           if (cd.hashtags[0] !== null) {
-            this.deleteCardTags(cd.hashtags).then(() => {
-              console.log('iddddaaaaaaaaaa' + id);
-              this.detachCardsId(id).then(() => {
-                console.log('asdfasf' + id);
+            this.deleteCardTags(cd.hashtags).then(() => this.detachCardsId(id))
+              .then(() => {
                 const allPromises = [];
                 if (card.hashtags[0] !== null) {
-                  console.log('asdfasdf' + id);
                   card.hashtags.forEach((element) => {
                     allPromises.push(this.insertCardHashtag(element, id));
                   });
@@ -101,11 +97,10 @@ module.exports = {
                   });
                 }
                 resolve(card);
-              }).catch((err) => console.log('aaaaaaaaaaaaaaaaa' + err));
-            }).catch((err) => console.log('bbbbbbbbbbbbb' + err));
+              });
           }
           resolve(card);
-        }).catch((err) => console.log('cccccccccccc' + err));
+        });
       });
     });
   },
